@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="比较不同采样率处理后的合成测试音频，听见带宽限制及抗混叠滤波的效果。">
+  <title>音频采样率试听 · 采样定理课堂</title>
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header wrap"><a class="brand" href="../index.html">采样定理课堂<span>Sampling Theorem Classroom</span></a><nav aria-label="导航"><a href="../index.html#demos">返回演示目录</a><a href="../materials/slides/采样定理_音频采样率播放Demo.pptx" download>下载音频课件 ↓</a></nav></header>
+  <main id="main" class="wrap">
+    <section class="audio-intro"><p class="eyebrow">Audio experiment / 10.5 seconds</p><h1>同一段声音，<br>听见采样率的差异。</h1><p>按 44.1 kHz、22.05 kHz、11.025 kHz、8 kHz、4 kHz 的顺序试听，留意高频细节如何减少。最后比较两个 8 kHz 版本，分辨带宽损失与混叠。</p><p class="note">下方标签表示模拟的采样率。所有音频经过相应处理后，都重建成 44.1 kHz、单声道 WAV 供播放器使用。素材为合成测试乐句。</p></section>
+    <div class="stop-row"><button class="button" id="stopAll" type="button">停止播放</button><p id="playStatus" role="status" aria-live="polite">点击下方播放器开始试听。</p></div>
+    <section class="audio-list" aria-label="采样率试听">
+      <article class="audio-item"><span class="number">01 / 参考</span><h2 style="font-size:24px">44.1 kHz</h2><p>Nyquist 频率 22.05 kHz，作为参考版本。</p><audio controls preload="metadata" data-label="44.1 kHz 参考" src="../assets/audio/clip_44100_reference.wav"></audio></article>
+      <article class="audio-item"><span class="number">02 / 先低通，再采样</span><h2 style="font-size:24px">22.05 kHz</h2><p>Nyquist 频率约 11.03 kHz，较高频的成分开始减少。</p><audio controls preload="metadata" data-label="22.05 kHz" src="../assets/audio/clip_22050.wav"></audio></article>
+      <article class="audio-item"><span class="number">03 / 先低通，再采样</span><h2 style="font-size:24px">11.025 kHz</h2><p>Nyquist 频率约 5.51 kHz，继续比较泛音和明亮感。</p><audio controls preload="metadata" data-label="11.025 kHz" src="../assets/audio/clip_11025.wav"></audio></article>
+      <article class="audio-item"><span class="number">04 / 先低通，再采样</span><h2 style="font-size:24px">8 kHz，有抗混叠滤波</h2><p>Nyquist 频率 4 kHz，低通处理使声音更闷。</p><audio controls preload="metadata" data-label="8 kHz，有抗混叠滤波" src="../assets/audio/clip_8000.wav"></audio></article>
+      <article class="audio-item"><span class="number">05 / 先低通，再采样</span><h2 style="font-size:24px">4 kHz</h2><p>Nyquist 频率 2 kHz，只保留较窄的频带。</p><audio controls preload="metadata" data-label="4 kHz" src="../assets/audio/clip_4000.wav"></audio></article>
+      <article class="audio-item"><span class="number">06 / 直接采样</span><h2 style="font-size:24px">8 kHz，无抗混叠滤波</h2><p>与第四段比较：超出 Nyquist 频率的成分会折回到较低频率。</p><audio controls preload="metadata" data-label="8 kHz，无抗混叠滤波" src="../assets/audio/clip_8000_alias.wav"></audio></article>
+    </section>
+    <section class="section"><p class="eyebrow">What to listen for</p><h2>把声音和图像联系起来。</h2><div class="audio-diagrams"><figure><img src="../assets/audio/spectra_comparison.png" alt="五种采样率对应的频谱比较和低通频带边界" loading="lazy"><figcaption>采样率降低时，为防止混叠，需要先缩小保留频带。</figcaption></figure><figure><img src="../assets/audio/waveform_zoom.png" alt="不同采样率的时域波形与采样点比较" loading="lazy"><figcaption>采样点更稀疏后，原有的高频细节无法完整记录。</figcaption></figure></div><p class="subtle">试听采用有限长度音频、FFT 低通和线性重采样；这是课堂演示处理链。其数值结果与理想无限长度 Sinc 重建有所区别。</p></section>
+  </main>
+  <footer class="wrap site-footer"><a href="../index.html">← 返回项目首页</a><span>采样定理课堂 · 音频 Demo</span></footer>
+  <script>
+    const players = [...document.querySelectorAll('audio')];
+    const status = document.getElementById('playStatus');
+    players.forEach(player => {
+      player.addEventListener('play', () => {
+        players.forEach(other => { if (other !== player) other.pause(); });
+        status.textContent = '正在播放：' + player.dataset.label;
+      });
+      player.addEventListener('ended', () => { status.textContent = '播放完毕：' + player.dataset.label; });
+      player.addEventListener('error', () => { status.textContent = '音频加载失败，请检查 assets/audio 文件夹是否完整。'; });
+    });
+    document.getElementById('stopAll').addEventListener('click', () => {
+      players.forEach(player => { player.pause(); player.currentTime = 0; });
+      status.textContent = '已停止播放。';
+    });
+  </script>
+</body>
+</html>

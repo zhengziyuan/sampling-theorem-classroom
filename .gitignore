@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+node_modules/
+.env
+.env.*
+!.env.example
+build/
+_site/
+_working_*.pptx
+*_重生成.pptx
+~$*
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "project": "sampling-theorem-classroom",
+  "packaged_on": "2026-10-05",
+  "preserved_files": [
+    {
+      "path": "materials/handouts/采样定理_15分钟讲义.docx",
+      "source_filename": "采样定理_15分钟讲义.docx",
+      "bytes": 385271,
+      "sha256": "edd1ec521f138110f77707171107336c853cb61c49e3638ea53f5b6fb9af9bff"
+    },
+    {
+      "path": "materials/handouts/采样定理_15分钟讲义.pdf",
+      "source_filename": "采样定理_15分钟讲义.pdf",
+      "bytes": 721589,
+      "sha256": "dbb827d2e38b2e432f59b4acd66725bbacc70170e462a1cf462869e0b1bde914"
+    },
+    {
+      "path": "materials/slides/采样定理_15分钟课堂.pptx",
+      "source_filename": "采样定理_15分钟课堂.pptx",
+      "bytes": 63941,
+      "sha256": "183f302b2e47e97d6150cba3453b56c344f35ab1d4ca30789c368146bbc88437"
+    },
+    {
+      "path": "materials/slides/采样定理_15分钟课堂_含互动演示器.pptm",
+      "source_filename": "采样定理_15分钟课堂_含互动演示器.pptm",
+      "bytes": 135793,
+      "sha256": "e1d331448ac0ff0e888001789da7875aabf6479fd788a7ae7daad6454b2d7209"
+    },
+    {
+      "path": "materials/slides/采样定理_HTML演示器_PPT插入版.pptx",
+      "source_filename": "采样定理_HTML演示器_PPT插入版.pptx",
+      "bytes": 1703746,
+      "sha256": "32f0b852155914d5f5bc4361374cdd57a1916546cd716adabfdd2b3be676e1d9"
+    },
+    {
+      "path": "materials/slides/采样定理_图片采样Demo_扩展版.pptx",
+      "source_filename": "采样定理_图片采样Demo_扩展版.pptx",
+      "bytes": 3668283,
+      "sha256": "948727eb38521e33b2b69fa7638feabb9df6fab2ed71572081da5936043d0365"
+    },
+    {
+      "path": "materials/slides/采样定理_音频采样率播放Demo.pptx",
+      "source_filename": "采样定理_音频采样率播放Demo.pptx",
+      "bytes": 5661990,
+      "sha256": "dab50f6f21429debf14d034f5346ced7b5901504d7b83c0a06cbc0ee1a5b97b0"
+    },
+    {
+      "path": "demos/sampling-theorem-demo.html",
+      "source_filename": "sampling-theorem-demo.html",
+      "bytes": 52260,
+      "sha256": "702912d7c87f31a31731f4b320ba52b57408263f835e441eed4eb79db631947e"
+    },
+    {
+      "path": "demos/sa-spectrum-sampling-demo.html",
+      "source_filename": "sa-spectrum-sampling-demo.html",
+      "bytes": 41851,
+      "sha256": "8c9ef066604c4728d58b7c42d2b1448651beedc3f75ca639cc91e28385b947bd"
+    },
+    {
+      "path": "assets/ppt/01_满足Nyquist_1920x1080.png",
+      "source_filename": "01_满足Nyquist_1920x1080.png",
+      "bytes": 285912,
+      "sha256": "3445a53826ddc458f55373d432443e7b443bde70be8ec2f5b1616181a6b58082"
+    },
+    {
+      "path": "assets/ppt/02_混叠折回_1920x1080.png",
+      "source_filename": "02_混叠折回_1920x1080.png",
+      "bytes": 284927,
+      "sha256": "61b106024d4c9c048fc13050d30ca9e1db89ab14b6804d02a4cad2fde8dbc440"
+    },
+    {
+      "path": "assets/ppt/03_重建公式_1920x1080.png",
+      "source_filename": "03_重建公式_1920x1080.png",
+      "bytes": 291772,
+      "sha256": "090fbdb1c9eb6bb8e293595a6e0d6ace5c623606ed75de24365c9beb0d3f3ae8"
+    },
+    {
+      "path": "assets/audio/clip_11025.wav",
+      "source_filename": "clip_11025.wav",
+      "bytes": 926144,
+      "sha256": "b51bb1fe67542f8a6ea5c06e50e06df86801f90bc7dbb1166fc483813cf51ac9"
+    },
+    {
+      "path": "assets/audio/clip_22050.wav",
+      "source_filename": "clip_22050.wav",
+      "bytes": 926144,
+      "sha256": "132df97f0c2ad1d0cbfec4e7e61c2b56779893dbf58b257ff26ed70379bdef04"
+    },
+    {
+      "path": "assets/audio/clip_4000.wav",
+      "source_filename": "clip_4000.wav",
+      "bytes": 926144,
+      "sha256": "2d42f88ccc1c00f781814e73a7a76aad49ac71a103b72bddb68a4162ab85fa28"
+    },
+    {
+      "path": "assets/audio/clip_44100_reference.wav",
+      "source_filename": "clip_44100_reference.wav",
+      "bytes": 926144,
+      "sha256": "58e2b7acc9a3f38593ce2408efc81a7f3f510869e457d965f7aaef5329508443"
+    },
+    {
+      "path": "assets/audio/clip_8000.wav",
+      "source_filename": "clip_8000.wav",
+      "bytes": 926144,
+      "sha256": "c69239aa6b822452411b298b001643809e6d030a7e4135a62c5d05b30ce871c9"
+    },
+    {
+      "path": "assets/audio/clip_8000_alias.wav",
+      "source_filename": "clip_8000_alias.wav",
+      "bytes": 926144,
+      "sha256": "0afe04b910278e3790fbd1c0582186d802ef974ce87a4ac040a854067277d441"
+    },
+    {
+      "path": "assets/audio/source_reference_44100.wav",
+      "source_filename": "source_reference_44100.wav",
+      "bytes": 926144,
+      "sha256": "58e2b7acc9a3f38593ce2408efc81a7f3f510869e457d965f7aaef5329508443"
+    },
+    {
+      "path": "assets/audio/spectra_comparison.png",
+      "source_filename": "spectra_comparison.png",
+      "bytes": 103376,
+      "sha256": "9d624db1960e4d73bea59b087f03a8afafa62fe0b8355223a6c33cadf1fc577f"
+    },
+    {
+      "path": "assets/audio/waveform_zoom.png",
+      "source_filename": "waveform_zoom.png",
+      "bytes": 67278,
+      "sha256": "09544201c50ac2fce025a00e78f469b63e8432f2372369e74380f2372adf9b74"
+    },
+    {
+      "path": "assets/screenshots/sampling-theorem.png",
+      "source_filename": "sampling-demo-desktop.png",
+      "bytes": 215402,
+      "sha256": "ae3509fac488c1a9eb9d6b349142a25ae12ba50c3d79eb757555ec3f988664e4"
+    },
+    {
+      "path": "assets/screenshots/sa-spectrum.png",
+      "source_filename": "sa-spectrum-demo-desktop.png",
+      "bytes": 319043,
+      "sha256": "e11d33bee2027cf44ddb3cec54f5945a1a46e6bea0b26bbcbc2b3b46a83a50bb"
+    },
+    {
+      "path": "assets/screenshots/course-preview.png",
+      "source_filename": "contact-sheet.png",
+      "bytes": 183010,
+      "sha256": "98311da4c1309540083f422b9a44b139231b6648498d04db832f0a8da249ff8b"
+    },
+    {
+      "path": "assets/screenshots/audio-preview.png",
+      "source_filename": "幻灯片2.PNG",
+      "bytes": 66953,
+      "sha256": "5de5577e3e28f0370b4c9613db68235dd4e394bf025c882f24f62bc7e3f402a2"
+    },
+    {
+      "path": "assets/screenshots/powerpoint-interactive.png",
+      "source_filename": "interactive-initial.png",
+      "bytes": 103435,
+      "sha256": "af01d60b1779315d2923b64dcb96fb254c29f6156bf7cd543480a16df2015bd0"
+    },
+    {
+      "path": "assets/figures/alias_wave.png",
+      "source_filename": "alias_wave.png",
+      "bytes": 109524,
+      "sha256": "9e9146c5816a16fde20eec8b0ef84567a8566409db3b6c4832f6f5ba73723bbe"
+    },
+    {
+      "path": "assets/figures/practical_chain.png",
+      "source_filename": "practical_chain.png",
+      "bytes": 88542,
+      "sha256": "ebc827fd1b70e8e7ed1385149c4afbe871502273aad3da61ee1a8e3bb59c0639"
+    },
+    {
+      "path": "assets/figures/sampling_time.png",
+      "source_filename": "sampling_time.png",
+      "bytes": 81004,
+      "sha256": "87263ae862b5f035a77d24b5d7d2971f403550c64e71049af05f5c4ab9d6ef3c"
+    },
+    {
+      "path": "assets/figures/spectrum_aliasing.png",
+      "source_filename": "spectrum_aliasing.png",
+      "bytes": 72783,
+      "sha256": "03ed93072e468fe9078ac9bfbe8bb209804271016647b1ee1a22e8948f8e83ad"
+    }
+  ],
+  "slides": [
+    {
+      "path": "materials/slides/采样定理_15分钟课堂.pptx",
+      "slides": 11,
+      "contains_vba": false
+    },
+    {
+      "path": "materials/slides/采样定理_15分钟课堂_含互动演示器.pptm",
+      "slides": 12,
+      "contains_vba": true
+    },
+    {
+      "path": "materials/slides/采样定理_HTML演示器_PPT插入版.pptx",
+      "slides": 4,
+      "contains_vba": false
+    },
+    {
+      "path": "materials/slides/采样定理_图片采样Demo_扩展版.pptx",
+      "slides": 9,
+      "contains_vba": false
+    },
+    {
+      "path": "materials/slides/采样定理_音频采样率播放Demo.pptx",
+      "slides": 7,
+      "contains_vba": false
+    }
+  ],
+  "handout_pages": 6,
+  "notes": [
+    "Preserved files are byte-for-byte copies of the supplied materials.",
+    "Audio JSON and helper scripts use portable paths. Original Office and HTML files remain unchanged."
+  ]
+}

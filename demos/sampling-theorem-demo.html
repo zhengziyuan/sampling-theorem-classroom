@@ -1,0 +1,1636 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>采样定理可视化演示器</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #0b1017;
+      --panel: #141b24;
+      --panel-2: #18222d;
+      --line: #2d3947;
+      --text: #eef5fb;
+      --muted: #a7b4c3;
+      --soft: #dce6ef;
+      --paper: #f8fbff;
+      --paper-line: #d8e0e8;
+      --blue: #2867d6;
+      --teal: #3fe1d0;
+      --amber: #ffae2b;
+      --magenta: #e64b9b;
+      --green: #7bd66e;
+      --red: #ff4f5f;
+      --radius: 8px;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      max-width: 100%;
+      overflow-x: hidden;
+      background:
+        linear-gradient(180deg, rgba(15, 24, 35, 0.96), rgba(7, 10, 15, 0.98)),
+        #0b1017;
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .app-shell {
+      width: 100%;
+      min-width: 0;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow-x: hidden;
+    }
+
+    header {
+      height: 64px;
+      padding: 0 18px;
+      border-bottom: 1px solid rgba(197, 213, 232, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-width: 0;
+      max-width: 100%;
+      background: rgba(9, 14, 21, 0.86);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(63, 225, 208, 0.44);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--teal);
+      background: rgba(63, 225, 208, 0.08);
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 760;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .top-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .top-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid rgba(197, 213, 232, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 14px;
+      padding: 14px;
+      min-height: 0;
+      min-width: 0;
+      height: calc(100vh - 64px);
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    aside {
+      min-width: 0;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .panel {
+      border: 1px solid rgba(199, 215, 235, 0.14);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(30, 41, 54, 0.96), rgba(18, 26, 36, 0.96));
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 13px;
+      font-size: 15px;
+      font-weight: 760;
+      color: #dcecff;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 18px;
+      border-radius: 4px;
+      background: var(--teal);
+      box-shadow: 0 0 18px rgba(63, 225, 208, 0.6);
+    }
+
+    .control-panel {
+      padding: 14px;
+    }
+
+    .control {
+      margin-bottom: 15px;
+    }
+
+    .control:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 7px;
+    }
+
+    label,
+    .control-name {
+      font-size: 13px;
+      color: var(--soft);
+      font-weight: 650;
+    }
+
+    .value-readout {
+      color: var(--teal);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 760;
+    }
+
+    .range-row {
+      display: grid;
+      gap: 5px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 0;
+      accent-color: var(--teal);
+    }
+
+    .range-scale {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    select,
+    button {
+      font: inherit;
+    }
+
+    select {
+      width: 100%;
+      height: 38px;
+      border: 1px solid rgba(198, 216, 238, 0.15);
+      border-radius: 7px;
+      color: var(--text);
+      background: #121a24;
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .segmented button {
+      height: 36px;
+      border: 1px solid rgba(198, 216, 238, 0.16);
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+    }
+
+    .segmented button.active {
+      color: #04100f;
+      background: linear-gradient(135deg, var(--teal), #93fff2);
+      border-color: transparent;
+      font-weight: 760;
+    }
+
+    .checks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+    }
+
+    .check-row {
+      min-height: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--teal);
+    }
+
+    .status-card {
+      padding: 15px;
+      border-color: rgba(63, 225, 208, 0.32);
+    }
+
+    .status-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--green);
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 13px;
+      text-align: center;
+    }
+
+    .status-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(123, 214, 110, 0.22);
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .status-card.aliasing {
+      border-color: rgba(255, 79, 95, 0.36);
+    }
+
+    .status-card.aliasing .status-head {
+      color: var(--red);
+    }
+
+    .status-card.aliasing .status-dot {
+      background: rgba(255, 79, 95, 0.18);
+      color: var(--red);
+    }
+
+    .formula-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+      font-variant-numeric: tabular-nums;
+      color: #f4f8fc;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .formula-grid span {
+      color: var(--muted);
+      font-size: 12px;
+      display: block;
+    }
+
+    .demo-rail {
+      position: relative;
+      height: 48px;
+      margin-top: 14px;
+      padding-top: 24px;
+    }
+
+    .rail-line {
+      height: 6px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--red) 0 42%, var(--amber) 42% 58%, var(--green) 58% 100%);
+    }
+
+    .rail-marker,
+    .rail-threshold {
+      position: absolute;
+      top: 12px;
+      width: 2px;
+      height: 24px;
+      transform: translateX(-1px);
+      border-radius: 2px;
+    }
+
+    .rail-marker {
+      background: #fff;
+    }
+
+    .rail-threshold {
+      background: var(--red);
+    }
+
+    .rail-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .content {
+      min-width: 0;
+      width: 100%;
+      display: grid;
+      gap: 10px;
+      grid-template-rows: repeat(3, minmax(210px, auto)) auto auto;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .chart-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 142px;
+      gap: 10px;
+      padding: 12px;
+      background: var(--paper);
+      color: #101820;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.44);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+      min-height: 210px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .chart-main {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 6px;
+    }
+
+    .chart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .chart-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 820;
+      color: #101820;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: #2c3642;
+      font-size: 12px;
+      min-width: 0;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .swatch {
+      width: 20px;
+      height: 0;
+      border-top: 2px solid currentColor;
+      display: inline-block;
+    }
+
+    .dot-swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      border: 2px solid currentColor;
+      display: inline-block;
+      background: #fff;
+    }
+
+    .canvas-wrap {
+      min-height: 0;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 154px;
+    }
+
+    .metric-box {
+      align-self: stretch;
+      border: 1px solid #e1e6ec;
+      border-radius: 7px;
+      background: #f1f5f9;
+      padding: 11px 10px;
+      color: #2a333d;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      font-size: 12px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .metric {
+      display: grid;
+      gap: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric strong {
+      color: #101820;
+      font-size: 12px;
+    }
+
+    .metric span {
+      color: var(--magenta);
+      font-size: 15px;
+      font-weight: 820;
+    }
+
+    .metric.good span {
+      color: #25823f;
+    }
+
+    .metric.warn span {
+      color: #c23845;
+    }
+
+    .theory-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .theory-panel {
+      padding: 13px 14px;
+      min-height: 118px;
+      min-width: 0;
+    }
+
+    .theory-panel h3 {
+      margin: 0 0 8px;
+      color: #cbe1ff;
+      font-size: 16px;
+    }
+
+    .theory-panel p {
+      margin: 0;
+      color: #d2dbe6;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .math-card {
+      width: fit-content;
+      min-width: 190px;
+      margin-top: 10px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 174, 43, 0.45);
+      border-radius: 7px;
+      color: #ffe1a3;
+      font-size: 18px;
+      font-family: Cambria, "Times New Roman", serif;
+      text-align: center;
+      background: rgba(255, 174, 43, 0.06);
+    }
+
+    .mini-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #d2dbe6;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .mechanism-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
+      gap: 10px;
+    }
+
+    .formula-panel {
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .formula-panel h3,
+    .alias-table-panel h3 {
+      margin: 0 0 11px;
+      color: #cbe1ff;
+      font-size: 16px;
+    }
+
+    .formula-stack {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .formula-tile {
+      border: 1px solid rgba(197, 213, 232, 0.14);
+      border-radius: 7px;
+      padding: 11px 12px;
+      background: rgba(255, 255, 255, 0.035);
+      min-width: 0;
+    }
+
+    .formula-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .formula {
+      color: #ffe1a3;
+      font-size: 17px;
+      line-height: 1.35;
+      font-family: Cambria, "Times New Roman", serif;
+      word-break: break-word;
+    }
+
+    .formula-note {
+      color: #d2dbe6;
+      font-size: 12px;
+      line-height: 1.55;
+      margin-top: 7px;
+    }
+
+    .alias-table-panel {
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .alias-table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #e8f1fb;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .alias-table th,
+    .alias-table td {
+      padding: 8px 7px;
+      border-bottom: 1px solid rgba(197, 213, 232, 0.14);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .alias-table th {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .status-chip {
+      display: inline-block;
+      min-width: 42px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      text-align: center;
+      color: #07130f;
+      background: var(--green);
+      font-weight: 800;
+    }
+
+    .status-chip.warn {
+      color: #fff;
+      background: var(--red);
+    }
+
+    @media (max-width: 1080px) {
+      header {
+        height: auto;
+        padding: 13px 14px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-strip {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+
+      aside {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        overflow: visible;
+        padding-right: 0;
+      }
+
+      .status-card,
+      .control-panel:last-child {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .brand-title {
+        font-size: 20px;
+      }
+
+      .brand-subtitle {
+        white-space: normal;
+      }
+
+      .top-strip {
+        flex-wrap: wrap;
+        overflow: visible;
+        white-space: normal;
+      }
+
+      .top-pill {
+        flex: 1 1 150px;
+        justify-content: center;
+      }
+
+      .main-grid {
+        padding: 10px;
+      }
+
+      aside,
+      .theory-row,
+      .mechanism-board,
+      .formula-stack {
+        grid-template-columns: 1fr;
+      }
+
+      .status-card,
+      .control-panel:last-child {
+        grid-column: auto;
+      }
+
+      .chart-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-title {
+        width: 100%;
+        white-space: normal;
+      }
+
+      .metric-box {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .chart-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .legend {
+        justify-content: flex-start;
+      }
+
+      .checks,
+      .formula-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M3 13.5h3.4l1.7-6.1 3.2 11 2.4-8.6 1.8 3.7H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 5.5h16v13H4z" stroke="currentColor" stroke-width="1.1" opacity=".55"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">采样定理演示器</h1>
+          <p class="brand-subtitle">奈奎斯特条件、混叠频率与理想重建的动态可视化</p>
+        </div>
+      </div>
+      <div class="top-strip">
+        <span class="top-pill">最高频率 <strong id="topFmax">120 Hz</strong></span>
+        <span class="top-pill">奈奎斯特频率 <strong id="topNyquist">200 Hz</strong></span>
+        <span class="top-pill">状态 <strong id="topState">满足采样条件</strong></span>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <aside>
+        <section class="panel control-panel">
+          <h2 class="section-title">信号参数</h2>
+
+          <div class="control">
+            <div class="control-top">
+              <label for="mode">波形类型</label>
+            </div>
+            <select id="mode">
+              <option value="sine">单频正弦</option>
+              <option value="dual">双频叠加</option>
+              <option value="harmonic">含三次/五次谐波</option>
+              <option value="am">调幅信号</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <div class="control-top">
+              <span class="control-name">主频率 f0</span>
+              <span class="value-readout" id="f0Value">120 Hz</span>
+            </div>
+            <div class="range-row">
+              <input id="f0" type="range" min="10" max="500" step="1" value="120" />
+              <div class="range-scale"><span>10 Hz</span><span>500 Hz</span></div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="control-top">
+              <span class="control-name">第二频率 / 调制频率</span>
+              <span class="value-readout" id="f1Value">260 Hz</span>
+            </div>
+            <div class="range-row">
+              <input id="f1" type="range" min="20" max="900" step="1" value="260" />
+              <div class="range-scale"><span>20 Hz</span><span>900 Hz</span></div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="control-top">
+              <span class="control-name">采样频率 fs</span>
+              <span class="value-readout" id="fsValue" style="color: var(--amber)">400 Hz</span>
+            </div>
+            <div class="range-row">
+              <input id="fs" type="range" min="40" max="2000" step="1" value="400" />
+              <div class="range-scale"><span>40 Hz</span><span>2 kHz</span></div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="control-top">
+              <span class="control-name">相位偏移 φ</span>
+              <span class="value-readout" id="phaseValue">0°</span>
+            </div>
+            <div class="range-row">
+              <input id="phase" type="range" min="-180" max="180" step="1" value="0" />
+              <div class="range-scale"><span>-180°</span><span>180°</span></div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="control-top">
+              <span class="control-name">噪声强度</span>
+              <span class="value-readout" id="noiseValue" style="color: var(--magenta)">0.02</span>
+            </div>
+            <div class="range-row">
+              <input id="noise" type="range" min="0" max="0.25" step="0.01" value="0.02" />
+              <div class="range-scale"><span>0</span><span>0.25</span></div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="control-top">
+              <span class="control-name">时间窗口</span>
+              <span class="value-readout" id="durationValue">100 ms</span>
+            </div>
+            <div class="range-row">
+              <input id="duration" type="range" min="30" max="180" step="5" value="100" />
+              <div class="range-scale"><span>30 ms</span><span>180 ms</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel control-panel">
+          <h2 class="section-title">显示选项</h2>
+          <div class="control">
+            <div class="control-top">
+              <span class="control-name">重建方式</span>
+            </div>
+            <div class="segmented" role="group" aria-label="重建方式">
+              <button type="button" class="active" data-method="sinc">Sinc</button>
+              <button type="button" data-method="hold">保持</button>
+            </div>
+          </div>
+          <div class="checks">
+            <label class="check-row"><input id="showSamples" type="checkbox" checked />显示采样点</label>
+            <label class="check-row"><input id="showRecon" type="checkbox" checked />显示重建信号</label>
+            <label class="check-row"><input id="showNoise" type="checkbox" />加入采样噪声</label>
+            <label class="check-row"><input id="showReplicas" type="checkbox" checked />显示频谱副本</label>
+            <label class="check-row"><input id="animate" type="checkbox" />扫描动画</label>
+            <label class="check-row"><input id="showAlias" type="checkbox" checked />标注混叠</label>
+          </div>
+        </section>
+
+        <section class="panel status-card" id="statusCard">
+          <div class="status-head"><span class="status-dot" id="statusDot">✓</span><span id="statusText">满足奈奎斯特条件</span></div>
+          <div class="formula-grid">
+            <div><span>fs</span><strong id="formulaFs">400 Hz</strong></div>
+            <div><span>fN = fs / 2</span><strong id="formulaFn">200 Hz</strong></div>
+            <div><span>fmax</span><strong id="formulaFmax">120 Hz</strong></div>
+            <div><span>fs / 2fmax</span><strong id="ratioValue">1.67</strong></div>
+          </div>
+          <div class="demo-rail" aria-hidden="true">
+            <div class="rail-marker" id="railMarker"></div>
+            <div class="rail-threshold" id="railThreshold"></div>
+            <div class="rail-line"></div>
+            <div class="rail-labels"><span>40</span><span id="thresholdLabel">240</span><span>2000 Hz</span></div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="content">
+        <article class="chart-panel">
+          <div class="chart-main">
+            <div class="chart-head">
+              <h2 class="chart-title">1. 连续信号与采样</h2>
+              <div class="legend">
+                <span class="legend-item" style="color: var(--blue)"><span class="swatch"></span>连续信号 x(t)</span>
+                <span class="legend-item" style="color: var(--red)"><span class="dot-swatch"></span>采样点 x[n]</span>
+                <span class="legend-item" style="color: #777"><span class="swatch"></span>扫描位置</span>
+              </div>
+            </div>
+            <div class="canvas-wrap"><canvas id="signalCanvas"></canvas></div>
+          </div>
+          <aside class="metric-box">
+            <div class="metric"><strong>采样周期 Ts</strong><span id="periodMetric">2.500 ms</span></div>
+            <div class="metric"><strong>窗口点数</strong><span id="countMetric">41</span></div>
+            <div class="metric"><strong>有效最高频率</strong><span id="fmaxMetric">120 Hz</span></div>
+          </aside>
+        </article>
+
+        <article class="chart-panel">
+          <div class="chart-main">
+            <div class="chart-head">
+              <h2 class="chart-title">2. 重建信号</h2>
+              <div class="legend">
+                <span class="legend-item" style="color: var(--blue)"><span class="swatch"></span>原信号 x(t)</span>
+                <span class="legend-item" style="color: var(--magenta)"><span class="swatch" style="border-style: dashed"></span>重建信号 x̂(t)</span>
+                <span class="legend-item" style="color: var(--red)"><span class="dot-swatch"></span>样本</span>
+              </div>
+            </div>
+            <div class="canvas-wrap"><canvas id="reconCanvas"></canvas></div>
+          </div>
+          <aside class="metric-box">
+            <div class="metric" id="rmseMetricBox"><strong>重建误差 RMSE</strong><span id="rmseMetric">0.000</span></div>
+            <div class="metric good" id="snrMetricBox"><strong>信噪比 SNR</strong><span id="snrMetric">∞ dB</span></div>
+            <div class="metric"><strong>重建方式</strong><span id="methodMetric">Sinc</span></div>
+          </aside>
+        </article>
+
+        <article class="chart-panel">
+          <div class="chart-main">
+            <div class="chart-head">
+              <h2 class="chart-title">3. 频谱与混叠</h2>
+              <div class="legend">
+                <span class="legend-item" style="color: var(--blue)"><span class="swatch"></span>|X(f)|</span>
+                <span class="legend-item" style="color: var(--amber)"><span class="swatch" style="border-style: dashed"></span>±fN</span>
+                <span class="legend-item" style="color: var(--magenta)"><span class="swatch"></span>混叠位置</span>
+              </div>
+            </div>
+            <div class="canvas-wrap"><canvas id="spectrumCanvas"></canvas></div>
+          </div>
+          <aside class="metric-box">
+            <div class="metric"><strong>主频位置</strong><span id="mainFreqMetric">±120 Hz</span></div>
+            <div class="metric" id="aliasMetricBox"><strong>混叠读数</strong><span id="aliasMetric">无</span></div>
+            <div class="metric"><strong>频谱间隔</strong><span id="replicaMetric">400 Hz</span></div>
+          </aside>
+        </article>
+
+        <section class="theory-row">
+          <article class="panel theory-panel">
+            <h3>奈奎斯特-香农采样定理</h3>
+            <p>若连续信号的最高频率为 fmax，采样频率满足下式，则理想低通滤波可无失真重建原信号。</p>
+            <div class="math-card">fs ≥ 2 fmax</div>
+          </article>
+          <article class="panel theory-panel">
+            <h3>当前读数</h3>
+            <ul class="mini-list">
+              <li id="readoutLine1">f0 = 120 Hz，fmax = 120 Hz。</li>
+              <li id="readoutLine2">fs = 400 Hz，fN = 200 Hz。</li>
+              <li id="readoutLine3">采样条件成立，重建曲线与原信号基本重合。</li>
+            </ul>
+          </article>
+          <article class="panel theory-panel">
+            <h3>混叠关系</h3>
+            <p>当某个频率分量越过 fN，它会折回到 0 到 fN 的可见频带中，读数为 |f - kfs| 的最小值。</p>
+            <div class="math-card" id="aliasFormula">falias = min |f - kfs|</div>
+          </article>
+        </section>
+
+        <section class="mechanism-board">
+          <article class="panel formula-panel">
+            <h3>采样、频谱复制与重建公式</h3>
+            <div class="formula-stack">
+              <div class="formula-tile">
+                <div class="formula-label">时域采样：只保留 nTs 时刻</div>
+                <div class="formula">xs(t) = x(t) · Σ δ(t - nTs)</div>
+                <div class="formula-note" id="timeFormulaNote">Ts = 1 / fs = 2.500 ms，样本序列 x[n] = x(nTs)。</div>
+              </div>
+              <div class="formula-tile">
+                <div class="formula-label">频域结果：原频谱按 fs 周期复制</div>
+                <div class="formula">Xs(f) = fs · Σ X(f - kfs)</div>
+                <div class="formula-note" id="copyFormulaNote">相邻频谱副本间隔为 400 Hz；若副本互相重叠，就无法知道能量来自哪一个原频率。</div>
+              </div>
+              <div class="formula-tile">
+                <div class="formula-label">理想低通重建：只取中心频带</div>
+                <div class="formula">H(f) = 1 / fs, |f| ≤ fN</div>
+                <div class="formula-note" id="filterFormulaNote">当前 fN = 200 Hz；当 fmax ≤ fN，中心频带完整保留原信号频谱。</div>
+              </div>
+              <div class="formula-tile">
+                <div class="formula-label">Sinc 插值：每个样本贡献一条 sinc 基函数</div>
+                <div class="formula" id="reconFormula">x̂(t) = Σ x[n] sinc(fs t - n)</div>
+                <div class="formula-note" id="reconFormulaNote">sinc(u) = sin(πu)/(πu)。拖动 fs 时，基函数间距 Ts 会随之改变。</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel alias-table-panel">
+            <h3>每个频率分量如何折叠</h3>
+            <table class="alias-table">
+              <thead>
+                <tr>
+                  <th>分量</th>
+                  <th>原频率</th>
+                  <th>最近副本</th>
+                  <th>可见读数</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="aliasRows"></tbody>
+            </table>
+            <p class="formula-note" id="aliasMechanismNote">折叠规则：选择整数 k，使 |f - kfs| 最小；这个最小值落在 0 到 fN 之间。</p>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      mode: "sine",
+      method: "sinc",
+      f0: 120,
+      f1: 260,
+      fs: 400,
+      phase: 0,
+      noise: 0.02,
+      duration: 0.1,
+      showSamples: true,
+      showRecon: true,
+      showNoise: false,
+      showReplicas: true,
+      animate: false,
+      showAlias: true
+    };
+
+    const els = {
+      mode: document.getElementById("mode"),
+      f0: document.getElementById("f0"),
+      f1: document.getElementById("f1"),
+      fs: document.getElementById("fs"),
+      phase: document.getElementById("phase"),
+      noise: document.getElementById("noise"),
+      duration: document.getElementById("duration"),
+      showSamples: document.getElementById("showSamples"),
+      showRecon: document.getElementById("showRecon"),
+      showNoise: document.getElementById("showNoise"),
+      showReplicas: document.getElementById("showReplicas"),
+      animate: document.getElementById("animate"),
+      showAlias: document.getElementById("showAlias"),
+      signalCanvas: document.getElementById("signalCanvas"),
+      reconCanvas: document.getElementById("reconCanvas"),
+      spectrumCanvas: document.getElementById("spectrumCanvas")
+    };
+
+    const fmtHz = value => value >= 1000 ? `${(value / 1000).toFixed(value >= 2000 ? 0 : 2)} kHz` : `${Math.round(value)} Hz`;
+    const fmtMs = seconds => `${(seconds * 1000).toFixed(3)} ms`;
+    const clamp = (x, min, max) => Math.max(min, Math.min(max, x));
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    function components() {
+      const f0 = state.f0;
+      const f1 = state.f1;
+      if (state.mode === "dual") {
+        return [
+          { f: f0, a: 0.78, label: "f0" },
+          { f: f1, a: 0.46, label: "f1" }
+        ];
+      }
+      if (state.mode === "harmonic") {
+        return [
+          { f: f0, a: 0.78, label: "f0" },
+          { f: 3 * f0, a: 0.28, label: "3f0" },
+          { f: 5 * f0, a: 0.16, label: "5f0" }
+        ];
+      }
+      if (state.mode === "am") {
+        const fm = Math.min(f1, Math.max(10, f0 * 0.9));
+        return [
+          { f: Math.abs(f0 - fm), a: 0.22, label: "f0-fm" },
+          { f: f0, a: 0.72, label: "f0" },
+          { f: f0 + fm, a: 0.22, label: "f0+fm" }
+        ].filter(item => item.f > 1);
+      }
+      return [{ f: f0, a: 1, label: "f0" }];
+    }
+
+    function fMax() {
+      return Math.max(...components().map(component => component.f));
+    }
+
+    function signalAt(t) {
+      const phi = state.phase * Math.PI / 180;
+      const a = 1;
+      if (state.mode === "dual") {
+        return a * (0.78 * Math.sin(2 * Math.PI * state.f0 * t + phi) +
+          0.46 * Math.sin(2 * Math.PI * state.f1 * t - phi * 0.45));
+      }
+      if (state.mode === "harmonic") {
+        return a * (0.78 * Math.sin(2 * Math.PI * state.f0 * t + phi) +
+          0.28 * Math.sin(2 * Math.PI * 3 * state.f0 * t + phi * 0.35) +
+          0.16 * Math.sin(2 * Math.PI * 5 * state.f0 * t - phi * 0.25));
+      }
+      if (state.mode === "am") {
+        const fm = Math.min(state.f1, Math.max(10, state.f0 * 0.9));
+        return a * (0.72 + 0.28 * Math.cos(2 * Math.PI * fm * t)) *
+          Math.sin(2 * Math.PI * state.f0 * t + phi);
+      }
+      return a * Math.sin(2 * Math.PI * state.f0 * t + phi);
+    }
+
+    function noiseAt(index) {
+      const raw = Math.sin(index * 12.9898 + 78.233) * 43758.5453;
+      return ((raw - Math.floor(raw)) * 2 - 1) * state.noise;
+    }
+
+    function sampleData() {
+      const samples = [];
+      const startN = Math.floor(-0.02 * state.fs);
+      const endN = Math.ceil((state.duration + 0.02) * state.fs);
+      for (let n = startN; n <= endN; n++) {
+        const t = n / state.fs;
+        const pure = signalAt(t);
+        const y = pure + (state.showNoise ? noiseAt(n) : 0);
+        samples.push({ n, t, pure, y });
+      }
+      return samples;
+    }
+
+    function sinc(x) {
+      if (Math.abs(x) < 1e-7) return 1;
+      const pix = Math.PI * x;
+      return Math.sin(pix) / pix;
+    }
+
+    function reconstructAt(t, samples) {
+      if (state.method === "hold") {
+        let best = samples[0];
+        for (const s of samples) {
+          if (s.t <= t) best = s;
+          if (s.t > t) break;
+        }
+        return best ? best.y : 0;
+      }
+      let sum = 0;
+      const support = state.fs * Math.max(0.018, state.duration * 0.22);
+      for (const s of samples) {
+        const x = (t - s.t) * state.fs;
+        if (Math.abs(x) <= support) sum += s.y * sinc(x);
+      }
+      return sum;
+    }
+
+    function aliasFreq(f) {
+      if (state.fs <= 0) return f;
+      const k = Math.round(f / state.fs);
+      let alias = Math.abs(f - k * state.fs);
+      while (alias > state.fs / 2) alias = Math.abs(alias - state.fs);
+      return alias;
+    }
+
+    function aliasInfo(f) {
+      if (state.fs <= 0) return { alias: f, k: 0, signed: f };
+      const k = Math.round(f / state.fs);
+      let signed = f - k * state.fs;
+      let alias = Math.abs(signed);
+      while (alias > state.fs / 2) {
+        signed = alias - state.fs;
+        alias = Math.abs(signed);
+      }
+      return { alias, k, signed };
+    }
+
+    function analysis() {
+      const comps = components();
+      const maxF = fMax();
+      const fn = state.fs / 2;
+      const threshold = 2 * maxF;
+      const ok = state.fs >= threshold;
+      const aliases = comps.map(c => {
+        const folded = c.f > fn + 1e-6;
+        return { ...c, ...aliasInfo(c.f), folded };
+      });
+      return { comps, maxF, fn, threshold, ok, aliases };
+    }
+
+    function setupCanvas(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(320, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(150, Math.floor(rect.height * dpr));
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function makePlot(ctx, width, height, xMin, xMax, yMin, yMax) {
+      const pad = { l: 54, r: 18, t: 10, b: 32 };
+      const plotW = Math.max(1, width - pad.l - pad.r);
+      const plotH = Math.max(1, height - pad.t - pad.b);
+      const x = value => pad.l + (value - xMin) / (xMax - xMin) * plotW;
+      const y = value => pad.t + (1 - (value - yMin) / (yMax - yMin)) * plotH;
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#f8fbff";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.save();
+      ctx.strokeStyle = "#dce3eb";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.font = "12px Segoe UI, sans-serif";
+      ctx.fillStyle = "#52606d";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      for (let i = 0; i <= 4; i++) {
+        const value = lerp(yMin, yMax, i / 4);
+        const py = y(value);
+        ctx.beginPath();
+        ctx.moveTo(pad.l, py);
+        ctx.lineTo(width - pad.r, py);
+        ctx.stroke();
+        ctx.fillText(value.toFixed(1), pad.l - 8, py);
+      }
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      for (let i = 0; i <= 5; i++) {
+        const value = lerp(xMin, xMax, i / 5);
+        const px = x(value);
+        ctx.beginPath();
+        ctx.moveTo(px, pad.t);
+        ctx.lineTo(px, height - pad.b);
+        ctx.stroke();
+        const label = Math.abs(value) < 1 ? value.toFixed(3).replace(/0+$/, "0") : Math.round(value).toString();
+        ctx.fillText(label, px, height - pad.b + 8);
+      }
+      ctx.setLineDash([]);
+      ctx.strokeStyle = "#b9c3cf";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(pad.l, pad.t, plotW, plotH);
+      if (yMin < 0 && yMax > 0) {
+        ctx.strokeStyle = "#aeb8c4";
+        ctx.beginPath();
+        ctx.moveTo(pad.l, y(0));
+        ctx.lineTo(width - pad.r, y(0));
+        ctx.stroke();
+      }
+      ctx.restore();
+      return { x, y, pad, plotW, plotH };
+    }
+
+    function strokeSeries(ctx, plot, points, color, width = 2, dash = []) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.setLineDash(dash);
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const px = plot.x(point.x);
+        const py = plot.y(point.y);
+        if (index === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawSamples(ctx, plot, samples) {
+      ctx.save();
+      ctx.fillStyle = "#fff";
+      ctx.strokeStyle = "#ff3348";
+      ctx.lineWidth = 2;
+      for (const s of samples) {
+        if (s.t < 0 || s.t > state.duration) continue;
+        const px = plot.x(s.t);
+        const py = plot.y(s.y);
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function visiblePoints(count = 900) {
+      const points = [];
+      for (let i = 0; i <= count; i++) {
+        const t = state.duration * i / count;
+        points.push({ x: t, y: signalAt(t) });
+      }
+      return points;
+    }
+
+    function yBounds(points, samples, reconPoints = []) {
+      const values = [
+        ...points.map(p => p.y),
+        ...samples.filter(s => s.t >= 0 && s.t <= state.duration).map(s => s.y),
+        ...reconPoints.map(p => p.y)
+      ];
+      let maxAbs = Math.max(1, ...values.map(Math.abs));
+      maxAbs = Math.min(2.4, maxAbs * 1.18);
+      return [-maxAbs, maxAbs];
+    }
+
+    function drawSignal(samples) {
+      const { ctx, width, height } = setupCanvas(els.signalCanvas);
+      const original = visiblePoints();
+      const [yMin, yMax] = yBounds(original, samples);
+      const plot = makePlot(ctx, width, height, 0, state.duration, yMin, yMax);
+      strokeSeries(ctx, plot, original, "#2867d6", 2);
+      if (state.showSamples) drawSamples(ctx, plot, samples);
+      drawScan(ctx, plot);
+      drawAxisTitles(ctx, width, height, "时间 t (s)", "幅值");
+    }
+
+    function drawRecon(samples) {
+      const { ctx, width, height } = setupCanvas(els.reconCanvas);
+      const original = visiblePoints();
+      const recon = [];
+      let mse = 0;
+      let signalPower = 0;
+      const steps = 650;
+      for (let i = 0; i <= steps; i++) {
+        const t = state.duration * i / steps;
+        const y = state.showRecon ? reconstructAt(t, samples) : NaN;
+        const truth = signalAt(t);
+        if (state.showRecon && Number.isFinite(y)) {
+          const err = y - truth;
+          mse += err * err;
+          signalPower += truth * truth;
+        }
+        recon.push({ x: t, y });
+      }
+      const rmse = state.showRecon ? Math.sqrt(mse / (steps + 1)) : 0;
+      const snr = rmse > 1e-7 ? 10 * Math.log10(signalPower / Math.max(1e-10, mse)) : Infinity;
+      const [yMin, yMax] = yBounds(original, samples, recon.filter(p => Number.isFinite(p.y)));
+      const plot = makePlot(ctx, width, height, 0, state.duration, yMin, yMax);
+      strokeSeries(ctx, plot, original, "#2867d6", 1.8);
+      if (state.showRecon) strokeSeries(ctx, plot, recon, "#e64b9b", 2, [7, 5]);
+      if (state.showSamples) drawSamples(ctx, plot, samples);
+      drawScan(ctx, plot);
+      drawAxisTitles(ctx, width, height, "时间 t (s)", "幅值");
+
+      document.getElementById("rmseMetric").textContent = rmse < 0.001 ? rmse.toExponential(2) : rmse.toFixed(3);
+      document.getElementById("snrMetric").textContent = Number.isFinite(snr) ? `${snr.toFixed(1)} dB` : "∞ dB";
+      document.getElementById("rmseMetricBox").className = `metric ${rmse < 0.08 ? "good" : "warn"}`;
+      document.getElementById("snrMetricBox").className = `metric ${snr > 28 || !Number.isFinite(snr) ? "good" : "warn"}`;
+    }
+
+    function drawSpectrum(info) {
+      const { ctx, width, height } = setupCanvas(els.spectrumCanvas);
+      const range = Math.max(500, info.maxF * 1.35, state.fs * 1.15);
+      const plot = makePlot(ctx, width, height, -range, range, 0, 1.15);
+
+      ctx.save();
+      const passLeft = plot.x(-Math.min(info.fn, range));
+      const passRight = plot.x(Math.min(info.fn, range));
+      ctx.fillStyle = "rgba(63, 225, 208, 0.08)";
+      ctx.fillRect(passLeft, plot.pad.t, Math.max(0, passRight - passLeft), plot.plotH);
+      ctx.fillStyle = "rgba(20, 30, 42, 0.58)";
+      ctx.font = "12px Microsoft YaHei, Segoe UI, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillText("理想低通通带", (passLeft + passRight) / 2, plot.pad.t + 6);
+      ctx.restore();
+
+      function peak(f, amp, color, alpha = 1, label = "") {
+        if (Math.abs(f) > range) return;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2;
+        const px = plot.x(f);
+        const py = plot.y(amp);
+        ctx.beginPath();
+        ctx.moveTo(px, plot.y(0));
+        ctx.lineTo(px, py);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.fill();
+        if (label) {
+          ctx.font = "12px Segoe UI, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          ctx.fillText(label, px, py - 7);
+        }
+        ctx.restore();
+      }
+
+      if (state.showReplicas) {
+        for (let k = -2; k <= 2; k++) {
+          if (k === 0) continue;
+          for (const c of info.comps) {
+            peak(k * state.fs + c.f, c.a * 0.42, "#ffae2b", 0.32);
+            peak(k * state.fs - c.f, c.a * 0.42, "#ffae2b", 0.32);
+          }
+        }
+      }
+
+      for (const c of info.comps) {
+        peak(c.f, c.a, "#2867d6", 1, c.label);
+        peak(-c.f, c.a, "#2867d6", 1);
+      }
+
+      ctx.save();
+      ctx.strokeStyle = "#ff9a16";
+      ctx.lineWidth = 1.7;
+      ctx.setLineDash([7, 5]);
+      [-info.fn, info.fn].forEach(f => {
+        if (Math.abs(f) <= range) {
+          ctx.beginPath();
+          ctx.moveTo(plot.x(f), plot.y(0));
+          ctx.lineTo(plot.x(f), plot.y(1.08));
+          ctx.stroke();
+        }
+      });
+      ctx.restore();
+
+      if (state.showAlias) {
+        for (const c of info.aliases) {
+          if (!c.folded) continue;
+          if (Math.abs(c.f) <= range && Math.abs(c.alias) <= range) {
+            const y = plot.y(0.92);
+            const from = plot.x(c.f);
+            const to = plot.x(c.alias);
+            ctx.save();
+            ctx.strokeStyle = "#e64b9b";
+            ctx.fillStyle = "#e64b9b";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(from, y);
+            ctx.lineTo(to, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            const dir = Math.sign(to - from) || 1;
+            ctx.beginPath();
+            ctx.moveTo(to, y);
+            ctx.lineTo(to - dir * 8, y - 4);
+            ctx.lineTo(to - dir * 8, y + 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.font = "12px Microsoft YaHei, Segoe UI, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "bottom";
+            ctx.fillText("折回", (from + to) / 2, y - 6);
+            ctx.restore();
+          }
+          peak(c.alias, Math.min(1.02, c.a + 0.15), "#e64b9b", 1, `${Math.round(c.alias)} Hz`);
+          peak(-c.alias, Math.min(1.02, c.a + 0.15), "#e64b9b", 1);
+        }
+      }
+
+      drawAxisTitles(ctx, width, height, "频率 f (Hz)", "幅度");
+    }
+
+    function drawScan(ctx, plot) {
+      if (!state.animate) return;
+      const now = performance.now() / 1000;
+      const t = (now * 0.18) % state.duration;
+      ctx.save();
+      ctx.strokeStyle = "rgba(21, 27, 35, 0.52)";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(plot.x(t), plot.pad.t);
+      ctx.lineTo(plot.x(t), plot.pad.t + plot.plotH);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawAxisTitles(ctx, width, height, xTitle, yTitle) {
+      ctx.save();
+      ctx.fillStyle = "#111820";
+      ctx.font = "12px Microsoft YaHei, Segoe UI, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText(xTitle, width / 2, height - 2);
+      ctx.translate(14, height / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(yTitle, 0, 0);
+      ctx.restore();
+    }
+
+    function updateReadouts(info, samples) {
+      const okText = info.ok ? "满足奈奎斯特条件" : "发生频谱混叠";
+      const statusCard = document.getElementById("statusCard");
+      statusCard.classList.toggle("aliasing", !info.ok);
+      document.getElementById("statusText").textContent = okText;
+      document.getElementById("statusDot").textContent = info.ok ? "✓" : "!";
+      document.getElementById("topState").textContent = okText;
+      document.getElementById("topState").style.color = info.ok ? "var(--green)" : "var(--red)";
+
+      document.getElementById("f0Value").textContent = fmtHz(state.f0);
+      document.getElementById("f1Value").textContent = fmtHz(state.f1);
+      document.getElementById("fsValue").textContent = fmtHz(state.fs);
+      document.getElementById("phaseValue").textContent = `${state.phase}°`;
+      document.getElementById("noiseValue").textContent = state.noise.toFixed(2);
+      document.getElementById("durationValue").textContent = `${Math.round(state.duration * 1000)} ms`;
+
+      document.getElementById("topFmax").textContent = fmtHz(info.maxF);
+      document.getElementById("topNyquist").textContent = fmtHz(info.fn);
+      document.getElementById("formulaFs").textContent = fmtHz(state.fs);
+      document.getElementById("formulaFn").textContent = fmtHz(info.fn);
+      document.getElementById("formulaFmax").textContent = fmtHz(info.maxF);
+      document.getElementById("ratioValue").textContent = (state.fs / Math.max(1, 2 * info.maxF)).toFixed(2);
+      document.getElementById("periodMetric").textContent = fmtMs(1 / state.fs);
+      document.getElementById("countMetric").textContent = samples.filter(s => s.t >= 0 && s.t <= state.duration).length.toString();
+      document.getElementById("fmaxMetric").textContent = fmtHz(info.maxF);
+      document.getElementById("mainFreqMetric").textContent = `±${fmtHz(state.f0)}`;
+      document.getElementById("replicaMetric").textContent = fmtHz(state.fs);
+      document.getElementById("methodMetric").textContent = state.method === "sinc" ? "Sinc" : "零阶保持";
+
+      const folded = info.aliases.filter(item => item.folded);
+      const aliasText = folded.length
+        ? folded.map(item => `${item.label}: ${fmtHz(item.alias)}`).join(" / ")
+        : "无";
+      const aliasMetric = document.getElementById("aliasMetric");
+      aliasMetric.textContent = aliasText;
+      document.getElementById("aliasMetricBox").className = `metric ${folded.length ? "warn" : "good"}`;
+      document.getElementById("aliasFormula").textContent = folded.length
+        ? `falias ≈ ${fmtHz(folded[0].alias)}`
+        : "falias = min |f - kfs|";
+
+      document.getElementById("timeFormulaNote").textContent =
+        `Ts = 1 / fs = ${fmtMs(1 / state.fs)}，样本序列 x[n] = x(nTs)。`;
+      document.getElementById("copyFormulaNote").textContent =
+        `相邻频谱副本间隔为 ${fmtHz(state.fs)}；副本中心在 0, ±fs, ±2fs ...。`;
+      document.getElementById("filterFormulaNote").textContent = info.ok
+        ? `当前 fN = ${fmtHz(info.fn)}，fmax = ${fmtHz(info.maxF)}；中心频带完整包含原频谱。`
+        : `当前 fN = ${fmtHz(info.fn)}，小于 fmax = ${fmtHz(info.maxF)}；中心频带已经混入相邻副本。`;
+      document.getElementById("reconFormula").textContent = state.method === "sinc"
+        ? "x̂(t) = Σ x[n] sinc(fs t - n)"
+        : "x̂(t) = x[⌊t / Ts⌋]";
+      document.getElementById("reconFormulaNote").textContent = state.method === "sinc"
+        ? "sinc(u) = sin(πu)/(πu)，它是理想低通滤波器的时域冲激响应。"
+        : "零阶保持会把每个样本维持到下一个样本，它方便演示，但不是无失真理想重建。";
+
+      const rows = info.aliases.map(item => {
+        const statusClass = item.folded ? "warn" : "";
+        const statusText = item.folded ? "折叠" : "保真";
+        const relation = `|${Math.round(item.f)} - ${item.k}·${Math.round(state.fs)}|`;
+        return `
+          <tr>
+            <td>${item.label}</td>
+            <td>${fmtHz(item.f)}</td>
+            <td>k = ${item.k}<br>${relation}</td>
+            <td>${fmtHz(item.alias)}</td>
+            <td><span class="status-chip ${statusClass}">${statusText}</span></td>
+          </tr>
+        `;
+      }).join("");
+      document.getElementById("aliasRows").innerHTML = rows;
+      document.getElementById("aliasMechanismNote").textContent = folded.length
+        ? `例如 ${folded[0].label}: |${Math.round(folded[0].f)} - ${folded[0].k}×${Math.round(state.fs)}| = ${Math.round(folded[0].alias)} Hz，所以该分量会被低通重建成 ${fmtHz(folded[0].alias)} 附近的振荡。`
+        : "所有分量都位于 ±fN 内，中心频谱副本与相邻副本分开，理想低通能截出原频谱。";
+
+      document.getElementById("readoutLine1").textContent = `f0 = ${fmtHz(state.f0)}，fmax = ${fmtHz(info.maxF)}。`;
+      document.getElementById("readoutLine2").textContent = `fs = ${fmtHz(state.fs)}，fN = ${fmtHz(info.fn)}。`;
+      document.getElementById("readoutLine3").textContent = info.ok
+        ? "采样条件成立，理想 Sinc 重建可贴近原信号。"
+        : `采样条件不成立，${aliasText} 会进入可见频带。`;
+
+      const railMin = 40;
+      const railMax = 2000;
+      const markerPercent = clamp((state.fs - railMin) / (railMax - railMin), 0, 1) * 100;
+      const thresholdPercent = clamp((info.threshold - railMin) / (railMax - railMin), 0, 1) * 100;
+      document.getElementById("railMarker").style.left = `${markerPercent}%`;
+      document.getElementById("railThreshold").style.left = `${thresholdPercent}%`;
+      document.getElementById("thresholdLabel").textContent = fmtHz(info.threshold);
+    }
+
+    let raf = 0;
+    function render() {
+      cancelAnimationFrame(raf);
+      const samples = sampleData();
+      const info = analysis();
+      updateReadouts(info, samples);
+      drawSignal(samples);
+      drawRecon(samples);
+      drawSpectrum(info);
+      if (state.animate) {
+        raf = requestAnimationFrame(render);
+      }
+    }
+
+    function syncStateFromInputs() {
+      state.mode = els.mode.value;
+      state.f0 = Number(els.f0.value);
+      state.f1 = Number(els.f1.value);
+      state.fs = Number(els.fs.value);
+      state.phase = Number(els.phase.value);
+      state.noise = Number(els.noise.value);
+      state.duration = Number(els.duration.value) / 1000;
+      state.showSamples = els.showSamples.checked;
+      state.showRecon = els.showRecon.checked;
+      state.showNoise = els.showNoise.checked;
+      state.showReplicas = els.showReplicas.checked;
+      state.animate = els.animate.checked;
+      state.showAlias = els.showAlias.checked;
+    }
+
+    for (const id of ["mode", "f0", "f1", "fs", "phase", "noise", "duration", "showSamples", "showRecon", "showNoise", "showReplicas", "animate", "showAlias"]) {
+      els[id].addEventListener("input", () => {
+        syncStateFromInputs();
+        render();
+      });
+    }
+
+    document.querySelectorAll("[data-method]").forEach(button => {
+      button.addEventListener("click", () => {
+        state.method = button.dataset.method;
+        document.querySelectorAll("[data-method]").forEach(item => item.classList.toggle("active", item === button));
+        render();
+      });
+    });
+
+    window.addEventListener("resize", () => render());
+    syncStateFromInputs();
+    render();
+  </script>
+</body>
+</html>

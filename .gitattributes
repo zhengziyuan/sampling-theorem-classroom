@@ -1,0 +1,18 @@
+* text=auto
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.ps1 text eol=crlf
+*.bas text eol=crlf
+*.pptx binary
+*.pptm binary
+*.docx binary
+*.pdf binary
+*.png binary
+*.wav binary
+demos/sampling-theorem-demo.html -text
+demos/sa-spectrum-sampling-demo.html -text
