@@ -2,7 +2,7 @@
 
 **Sampling Theorem Classroom** 是一套面向本科《信号与系统》课堂的教学项目，包含 15 分钟课件、讲义、网页互动演示、图片采样实验和音频试听。
 
-[打开在线演示](https://zhengziyuan.github.io/sampling-theorem-classroom/) · [下载 v1.0.0 完整离线包](https://github.com/zhengziyuan/sampling-theorem-classroom/releases/tag/v1.0.0) · [课堂使用指南](docs/classroom-guide.md) · [材料目录](docs/materials.md) · [修改与维护](docs/development.md)
+[打开在线演示](https://zhengziyuan.github.io/sampling-theorem-classroom/) · [下载 v1.0.1 完整离线包](https://github.com/zhengziyuan/sampling-theorem-classroom/releases/tag/v1.0.1) · [课堂使用指南](docs/classroom-guide.md) · [材料目录](docs/materials.md) · [修改与维护](docs/development.md)
 
 ![采样定理互动演示器](assets/screenshots/sampling-theorem.png)
 
